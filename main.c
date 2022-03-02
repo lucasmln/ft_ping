@@ -10,57 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netdb.h>
-#include "libft/libft.h"
-#include <netinet/ip_icmp.h>
-#include <time.h>
-#include <signal.h>
-#include <errno.h>
-
-#ifdef __APPLE__
-       // If the OS doesn't declare it, do it ourself (copy-pasted from GNU C Library, license: LGPL)
-# include <stdint.h>
-struct icmphdr
-{
-	uint8_t type;           /* message type */
-	uint8_t code;           /* type sub-code */
-	uint16_t checksum;
-	union
-	{
-		struct
-		{
-			uint16_t	id;
-			uint16_t	sequence;
-		} echo;                 /* echo datagram */
-		uint32_t	gateway;        /* gateway address */
-		struct
-		{
-			uint16_t	__unused;
-			uint16_t	mtu;
-		} frag;                 /* path mtu discovery */
-		/*uint8_t reserved[4];*/
-	} un;
-};
-
-       // Fix slightly changed names
-//# define SOL_IP IPPROTO_IP
-
-#endif
-
-struct ping_pkt
-{
-	struct icmphdr hdr;
-	char msg[64-sizeof(struct icmphdr)];
-};
-
-void	create_socket(const char *dest, struct addrinfo *res);
-
-int		sockfd;
+#include "ft_ping.h"
 
 void	print_usage()
 {
@@ -80,62 +30,73 @@ void	error(char *error)
 	exit(1);
 }
 
-void	dns_lookup(const char *dest, struct addrinfo *res)
-{
-	if (getaddrinfo(dest, "", NULL, &res) != 0)
-	{
-		printf("ft_ping: cannot resolve %s: Unknown host\n", dest);
-		exit(1);
-	}
-	create_socket(dest, res);
-}
-
-void	create_socket(const char *dest, struct addrinfo *res)
-{
-	(void)dest;
-	(void)res;
-	sockfd = socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
-	//socket(AF_INET, SOCK_RAW, IPPROTO_ICMP);
-	if (sockfd == -1)
-	{
-		printf("ft_ping: error socket : %d, errno : %s\n", sockfd, hstrerror(errno));
-		exit(1);
-	}
-	printf("socket success\n");
-}
-
-void	send_ping(struct addrinfo *addr, char *host)
+void	create_socket(const char *dest)
 {
 	unsigned short		ttl = 64;
 	struct timeval		timeout;
-	struct icmphdr		hdr;
-	//char				msg[4096];
 
-	ttl = 64;
-	if (setsockopt(sockfd, SOL_IP, IP_TTL, &ttl, sizeof(ttl)) != 0)
+	g_data.sockfd = socket(AF_INET, SOCK_RAW, IPPROTO_ICMP);
+	if (g_data.sockfd == -1)
+	{
+		printf("ft_ping: error socket : %d, errno : %s\n", g_data.sockfd, hstrerror(errno));
+		exit(1);
+	}
+	printf("socket success\n");
+
+	timeout.tv_sec = 1;
+	timeout.tv_usec = 0;
+	if (setsockopt(g_data.sockfd, SOL_IP, IP_TTL, &ttl, sizeof(ttl)) != 0)
 	{
 		fprintf(stderr, "Setting socket options to TTL failed! %m\n");
 		exit(1);
 	}
-	else
-	{
-		printf("\nSocket set to TTL..\n");
-	}
+	printf("Socket set to TTL..\n");
 
-	while (1)
+	if (setsockopt(g_data.sockfd, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout)) != 0)
 	{
-		ft_bzero(&hdr, sizeof(hdr));
-		hdr.type = ICMP_ECHO;
-		hdr.un.echo.id = getpid();
+		fprintf(stderr, "Setting socket options to timeout failed! %m\n");
+		exit(1);
 	}
+	printf("Socket set to timeout..\n");
+}
+
+void	dns_lookup(const char *dest)
+{
+	struct addrinfo		*res;
+	struct addrinfo		hint;
+
+	hint.ai_family = AF_INET;
+	hint.ai_socktype = SOCK_RAW;
+	hint.ai_protocol = IPPROTO_ICMP;
+	if (getaddrinfo(dest, NULL, NULL, &res) != 0)
+	{
+		printf("ft_ping: cannot resolve %s: Unknown host\n", dest);
+		exit(1);
+	}
+	g_data.addr = (struct sockaddr_in *)res->ai_addr;
+	create_socket(dest);
+}
+
+void	send_ping(char *host)
+{
+
+	while (!g_data.end)
+	{
+		send_packet();
+		alarm(1);
+		get_packet();
+	}
+	printf("\nend of ping\n");
 }
 
 int		main(int ac, char **av)
 {
-	struct addrinfo		*res = NULL;
-
 	if (ac <= 1 || ac > 2)
 		print_usage();
-	dns_lookup(av[1], res);
-	send_ping(res, av[1]);
+	dns_lookup(av[1]);
+	g_data.alarm = 0;
+	g_data.end = 0;
+	signal(SIGINT, sighandler);
+	signal(SIGALRM, sighandler);
+	send_ping(av[1]);
 }

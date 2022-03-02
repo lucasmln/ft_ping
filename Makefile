@@ -12,9 +12,9 @@
 
 NAME = ft_ping
 
-SRC = ./main.c
+SRC = ./main.c ./get_signal.c ./packet.c
 
-CFLAGS = -Wall -Wextra -Werror
+CFLAGS = #-Wall -Wextra -Werror
 
 OBJ = $(SRC:.c=.o)
 
@@ -23,6 +23,7 @@ all: $(NAME)
 $(NAME) : $(OBJ)
 	make -C libft
 	gcc $(CFLAGS) $(OBJ) libft/libft.a -o $(NAME)
+	#setcap cap_net_raw+ep ft_ping
 
 clean :
 	make -C libft clean
@@ -32,3 +33,7 @@ fclean :
 	make -C libft fclean
 	rm -f *.o
 	rm ft_ping
+
+re :
+	make fclean
+	make
