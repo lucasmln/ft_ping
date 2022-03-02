@@ -6,7 +6,7 @@
 /*   By: lmoulin <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/28 15:25:11 by lmoulin           #+#    #+#             */
-/*   Updated: 2022/02/28 19:31:35 by lmoulin          ###   ########.fr       */
+/*   Updated: 2022/03/02 13:46:50 by lmoulin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@
 #include <netinet/ip_icmp.h>
 #include <time.h>
 #include <signal.h>
+#include <errno.h>
 
 #ifdef __APPLE__
        // If the OS doesn't declare it, do it ourself (copy-pasted from GNU C Library, license: LGPL)
@@ -47,13 +48,19 @@ struct icmphdr
 };
 
        // Fix slightly changed names
-# define SOL_IP IPPROTO_IP
+//# define SOL_IP IPPROTO_IP
 
 #endif
 
+struct ping_pkt
+{
+	struct icmphdr hdr;
+	char msg[64-sizeof(struct icmphdr)];
+};
+
 void	create_socket(const char *dest, struct addrinfo *res);
 
-int		sock;
+int		sockfd;
 
 void	print_usage()
 {
@@ -85,9 +92,13 @@ void	dns_lookup(const char *dest, struct addrinfo *res)
 
 void	create_socket(const char *dest, struct addrinfo *res)
 {
-	if (!(socket(AF_INET, SOCK_RAW, IPPROTO_ICMP)))
+	(void)dest;
+	(void)res;
+	sockfd = socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
+	//socket(AF_INET, SOCK_RAW, IPPROTO_ICMP);
+	if (sockfd == -1)
 	{
-		printf("ft_ping: error socket\n");
+		printf("ft_ping: error socket : %d, errno : %s\n", sockfd, hstrerror(errno));
 		exit(1);
 	}
 	printf("socket success\n");
@@ -95,22 +106,20 @@ void	create_socket(const char *dest, struct addrinfo *res)
 
 void	send_ping(struct addrinfo *addr, char *host)
 {
-	int					ttl;
+	unsigned short		ttl = 64;
 	struct timeval		timeout;
 	struct icmphdr		hdr;
-	char				msg[4096];
+	//char				msg[4096];
 
 	ttl = 64;
-	if (setsockopt(sock, IPPROTO_IP /*SOL_IP*/, IP_TTL, &ttl, sizeof(ttl)))
+	if (setsockopt(sockfd, SOL_IP, IP_TTL, &ttl, sizeof(ttl)) != 0)
 	{
-		printf("Error: setsockopt failed\n");
+		fprintf(stderr, "Setting socket options to TTL failed! %m\n");
 		exit(1);
 	}
-	timeout.tv_sec = 1;
-	if (setsockopt (sock, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout)) < 0)
+	else
 	{
-		printf("Error: setsockopt failed\n");
-		exit(1);
+		printf("\nSocket set to TTL..\n");
 	}
 
 	while (1)
@@ -123,7 +132,7 @@ void	send_ping(struct addrinfo *addr, char *host)
 
 int		main(int ac, char **av)
 {
-	struct addrinfo		*res;
+	struct addrinfo		*res = NULL;
 
 	if (ac <= 1 || ac > 2)
 		print_usage();
