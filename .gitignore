@@ -1,2 +1,3 @@
 srcs/*.o
 libft/*.o
+ft_ping
