@@ -42,7 +42,6 @@ void	init(char **av, int ac)
 	g_data.alarm = 0;
 	g_data.count_msg = 0;
 	g_data.seq = 1;
-	g_data.end = 0;
 	g_data.user_request = av[ac -1];
 	g_data.curr_pid = getpid();
 	g_data.stats.min = -1;

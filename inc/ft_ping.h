@@ -60,7 +60,6 @@ typedef struct		ping_s
 	char				*reverse_hostname;
 	char				*user_request;
 	bool				alarm;
-	int					end;
 	int					sockfd;
 	int					count_msg;
 	int					lose_msg;
