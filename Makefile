@@ -12,17 +12,21 @@
 
 NAME = ft_ping
 
-SRC = ./main.c ./get_signal.c ./packet.c
+SRC = main.c get_signal.c packet.c ping_output.c time.c socket.c
+
+DIR_SRC = ./srcs/
+
+SRCS = $(addprefix $(DIR_SRC), $(SRC))
 
 CFLAGS = #-Wall -Wextra -Werror
 
-OBJ = $(SRC:.c=.o)
+OBJ = $(SRCS:.c=.o)
 
 all: $(NAME)
 
 $(NAME) : $(OBJ)
 	make -C libft
-	gcc $(CFLAGS) $(OBJ) libft/libft.a -o $(NAME)
+	gcc $(CFLAGS) $(OBJ) libft/libft.a -o $(NAME) -lm
 	#setcap cap_net_raw+ep ft_ping
 
 clean :
