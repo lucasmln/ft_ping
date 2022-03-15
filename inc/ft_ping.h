@@ -20,6 +20,8 @@
 
 # define MAX_ADDR_LEN 46
 # define PING_PKT 64
+# define SUCCESS 0
+# define ERROR 1
 # define BSWAP16(x)			((__uint16_t) ((((x) >> 8) & 0xff) | (((x) & 0xff) << 8)))
 # define BSWAP32(x)			((__uint32_t) ((((x) >> 16) & 0xffff) | (((x) & 0xffff) << 16)))
 
@@ -76,7 +78,7 @@ ping_t		g_data;
 */
 void	print_usage();
 void	send_ping();
-void	init(char **av);
+void	init(char **av, int ac);
 void	free_ping();
 
 /*
@@ -115,5 +117,11 @@ void		save_time(struct timeval *tz);
 void	dns_lookup(const char *dest);
 void	reverse_dns_lookup();
 void	create_socket(const char *dest);
+
+/*
+ ** parse.c
+*/
+int		parse_flag(char *flag);
+int		parse(char **av, int ac);
 
 #endif

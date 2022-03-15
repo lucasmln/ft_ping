@@ -12,7 +12,7 @@
 
 NAME = ft_ping
 
-SRC = main.c get_signal.c packet.c ping_output.c time.c socket.c
+SRC = main.c get_signal.c packet.c ping_output.c time.c socket.c parse.c
 
 DIR_SRC = ./srcs/
 

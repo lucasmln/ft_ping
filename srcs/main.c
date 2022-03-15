@@ -37,13 +37,13 @@ void	send_ping()
 	print_end_ping();
 }
 
-void	init(char **av)
+void	init(char **av, int ac)
 {
 	g_data.alarm = 0;
 	g_data.count_msg = 0;
 	g_data.seq = 1;
 	g_data.end = 0;
-	g_data.user_request = av[1];
+	g_data.user_request = av[ac -1];
 	g_data.curr_pid = getpid();
 	g_data.stats.min = -1;
 	g_data.stats.max = -1;
@@ -63,10 +63,9 @@ void	free_ping()
 
 int		main(int ac, char **av)
 {
-	if (ac <= 1 || ac > 2)
-		print_usage();
-	init(av);
-	dns_lookup(av[1]);
+	parse(av, ac);
+	init(av, ac);
+	dns_lookup(av[ac - 1]);
 	reverse_dns_lookup();
 	send_ping();
 	free_ping();
