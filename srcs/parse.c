@@ -65,7 +65,7 @@ void	get_ttl(char **av, int ac, const int i)
 	g_data.ttl = (unsigned int)ft_atoi(av[i]);
 	if (g_data.ttl <= 0 || g_data.ttl > 255)
 	{
-		printf("ft_ping: ttl %d out of range\n", g_data.ttl);
+		printf("ft_ping: ttl %lld out of range\n", g_data.ttl);
 		exit(2);
 	}
 	if (i == ac - 1)
@@ -96,7 +96,7 @@ void	get_count(char **av, int ac, const int i)
 		print_usage();
 }
 
-int		parse_flag(int *flags, char *str)
+void	parse_flag(int *flags, char *str)
 {
 	if (ft_strncmp(str, "-h", 2) == 0)
 		print_usage();

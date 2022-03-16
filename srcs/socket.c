@@ -1,6 +1,6 @@
 #include "../inc/ft_ping.h"
 
-void	create_socket(const char *dest)
+void	create_socket()
 {
 	struct timeval		timeout;
 

@@ -19,10 +19,12 @@ void	wait_time(double time_sec)
 	{
 		save_time(&init);
 		if (goal.tv_sec - init.tv_sec <= 0)
+		{
 			if (goal.tv_sec - init.tv_sec < 0)
 				break;
 			else if (goal.tv_usec - init.tv_usec <= 0)
 				break;
+		}
 	}
 }
 

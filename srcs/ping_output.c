@@ -21,6 +21,9 @@ void	print_end_ping()
 	save_time(&end);
 	total = get_ping_time(g_data.start_ping, end);
 	lose = (g_data.lose_msg / g_data.count_msg) * 100;
+	g_data.stats.min = g_data.stats.min < 0 ? 0 : g_data.stats.min;
+	g_data.stats.max = g_data.stats.max < 0 ? 0 : g_data.stats.max;
+	g_data.stats.avg = g_data.stats.avg < 0 ? 0 : g_data.stats.avg;
 	mdev = get_mdev();
 	printf("\n--- %s ft_ping statistics ---\n", g_data.user_request);
 	printf("%d packets transmitted, %d received, %d%% packet loss, time %.0lfms\n",

@@ -11,9 +11,6 @@ void	intialize_send()
 	g_data.packet.hdr.icmp_id = BSWAP16(g_data.curr_pid);
 	g_data.packet.hdr.icmp_seq = BSWAP16(g_data.seq);
 	ft_memcpy(&g_data.packet.hdr.icmp_dun, &(curr.tv_sec), sizeof(curr.tv_sec));
-	for (int i = 0; i < sizeof(g_data.packet.msg) - 1; i++)
-		g_data.packet.msg[i] = i + '0';
-	g_data.packet.msg[sizeof(g_data.packet.msg) - 1] = 0;
 	g_data.packet.hdr.icmp_cksum = checksum(&g_data.packet, sizeof(g_data.packet));
 }
 
@@ -60,6 +57,7 @@ void	update_ping_stat(double time)
 		g_data.stats.avg = time;
 		g_data.stats.min = time;
 		g_data.received_msg++;
+		printf("AVG = %lf\n", g_data.stats.avg);
 	}
 	else
 	{
@@ -67,7 +65,8 @@ void	update_ping_stat(double time)
 			g_data.stats.max = time;
 		else if (time < g_data.stats.min)
 			g_data.stats.min = time;
-		g_data.stats.avg = (g_data.stats.avg * g_data.received_msg + time) / ++g_data.received_msg;
+		g_data.stats.avg = (g_data.stats.avg * g_data.received_msg + time) / (g_data.received_msg + 1);
+		g_data.received_msg++;
 	}
 }
 

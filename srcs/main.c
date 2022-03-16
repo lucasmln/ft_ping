@@ -14,10 +14,8 @@
 
 void	send_ping()
 {
-	struct timeval		ping_time;
 	struct timeval		packet_time_start;
 	int					ret;
-	bool				state;
 
 	if (g_data.flags & FLAG_w)
 		alarm(g_data.deadline);

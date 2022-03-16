@@ -79,7 +79,7 @@ typedef struct		ping_s
 	struct timeval		start_ping;
 	pid_t				curr_pid;
 	int					seq;
-	unsigned int		ttl;
+	long long			ttl;
 	int					flags;
 	int					count;
 	double				interval;
@@ -132,12 +132,12 @@ void		save_time(struct timeval *tz);
 */
 void	dns_lookup(const char *dest);
 void	reverse_dns_lookup();
-void	create_socket(const char *dest);
+void	create_socket();
 
 /*
  ** parse.c
 */
-int		parse_flag(int *flags, char *flag);
+void	parse_flag(int *flags, char *flag);
 int		parse(char **av, int ac);
 void	get_count(char **av, int ac, const int i);
 void	get_interval(char **av, int ac, const int i);
