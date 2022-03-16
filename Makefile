@@ -18,7 +18,7 @@ DIR_SRC = ./srcs/
 
 SRCS = $(addprefix $(DIR_SRC), $(SRC))
 
-CFLAGS = #-Wall -Wextra -Werror
+CFLAGS = -Wall -Wextra -Werror
 
 OBJ = $(SRCS:.c=.o)
 
