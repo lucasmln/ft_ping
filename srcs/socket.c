@@ -5,7 +5,6 @@ void	create_socket(const char *dest)
 	struct timeval		timeout;
 
 	g_data.sockfd = socket(AF_INET, SOCK_RAW, IPPROTO_ICMP);
-	g_data.ttl = 128;
 	if (g_data.sockfd == -1)
 	{
 		printf("ft_ping: error socket : %d, errno : %s\n", g_data.sockfd, hstrerror(errno));

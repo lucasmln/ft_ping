@@ -43,7 +43,7 @@ int		send_packet(struct timeval *packet_ping_start)
 	{
 		if (ret < 0)
 			fprintf(stderr, "Packet Sending Failed! %m\n");
-		else
+		else if (!(g_data.flags & FLAG_Q))
 			printf("empty packet send\n");
 		return (1);
 	}
@@ -73,7 +73,6 @@ void	update_ping_stat(double time)
 
 int		get_packet(struct timeval *packet_ping_start)
 {
-	bool			alarm_state = g_data.alarm;
 	struct ip		*ip;
 	struct timeval	end_ping;
 	struct icmp		*ret_icmp;
@@ -94,7 +93,8 @@ int		get_packet(struct timeval *packet_ping_start)
 			get_packet(packet_ping_start);
 			return (0);
 		}
-		print_packet(get_ping_time(*packet_ping_start, end_ping), ip->ip_ttl);
+		if (!(g_data.flags & FLAG_Q))
+			print_packet(get_ping_time(*packet_ping_start, end_ping), ip->ip_ttl);
 	}
 	else
 		g_data.lose_msg++;

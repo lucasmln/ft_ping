@@ -22,6 +22,18 @@
 # define PING_PKT 64
 # define SUCCESS 0
 # define ERROR 1
+# define USEC 1000000
+
+# define FLAG_H		0b000000001 // Display how use ping
+# define FLAG_V		0b000000010 // verbose
+# define FLAG_C		0b000000100 // Packet count
+# define FLAG_I		0b000010000 // Set interval between ping
+# define FLAG_T		0b000100000 // Set TTL value
+# define FLAG_W		0b001000000 // Set deadline don't care about ping count
+# define FLAG_D		0b000001000 // Print Timestamp before packet
+# define FLAG_Q		0b010000000 // Quiet mode, display only ping header and ping statistics
+# define FLAG_WRONG	0b100000000
+
 # define BSWAP16(x)			((__uint16_t) ((((x) >> 8) & 0xff) | (((x) & 0xff) << 8)))
 # define BSWAP32(x)			((__uint32_t) ((((x) >> 16) & 0xffff) | (((x) & 0xffff) << 16)))
 
@@ -59,7 +71,6 @@ typedef struct		ping_s
 	char				*address_name;
 	char				*reverse_hostname;
 	char				*user_request;
-	bool				alarm;
 	int					sockfd;
 	int					count_msg;
 	int					lose_msg;
@@ -67,7 +78,11 @@ typedef struct		ping_s
 	struct timeval		start_ping;
 	pid_t				curr_pid;
 	int					seq;
-	int					ttl;
+	unsigned int		ttl;
+	int					flags;
+	int					count;
+	double				interval;
+	int					deadline;
 }						ping_t;
 
 ping_t		g_data;
@@ -105,7 +120,7 @@ void	print_start_ping();
 /*
  ** time.c
 */
-void		wait_time();
+void		wait_time(double time_sec);
 double		get_mdev();
 double		get_ping_time(struct timeval start, struct timeval end);
 void		save_time(struct timeval *tz);
@@ -120,7 +135,11 @@ void	create_socket(const char *dest);
 /*
  ** parse.c
 */
-int		parse_flag(char *flag);
+int		parse_flag(int *flags, char *flag);
 int		parse(char **av, int ac);
+void	get_count(char **av, int ac, const int i);
+void	get_interval(char **av, int ac, const int i);
+void	get_ttl(char **av, int ac, const int i);
+void	get_deadline(char **av, int ac, const int i);
 
 #endif

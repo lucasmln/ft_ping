@@ -10,6 +10,8 @@ void	sighandler(int code)
 	}
 	else if (code == SIGALRM)
 	{
-		printf("ALARM\n");
+		print_end_ping();
+		free_ping();
+		exit(0);
 	}
 }
