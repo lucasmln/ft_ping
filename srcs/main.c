@@ -19,7 +19,7 @@ void	send_ping()
 	int					ret;
 	bool				state;
 
-	if (g_data.flags & FLAG_W)
+	if (g_data.flags & FLAG_w)
 		alarm(g_data.deadline);
 	print_start_ping();
 	save_time(&g_data.start_ping);
@@ -42,6 +42,8 @@ void	init(char **av, int ac)
 		g_data.ttl = 128;
 	if (!(g_data.flags & FLAG_I))
 		g_data.interval = 1;
+	if (!(g_data.flags & FLAG_W))
+		g_data.timeout = 1;
 	g_data.count_msg = 0;
 	g_data.seq = 1;
 	g_data.user_request = av[ac -1];

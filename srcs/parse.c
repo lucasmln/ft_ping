@@ -12,6 +12,7 @@ int		parse(char **av, int ac)
 	g_data.count = -1;
 	g_data.interval = -1;
 	g_data.deadline = -1;
+	g_data.timeout = -1;
 	g_data.ttl = -1;
 	while (i < ac)
 	{
@@ -21,8 +22,10 @@ int		parse(char **av, int ac)
 			get_interval(av, ac, i);
 		if (flags & FLAG_T && g_data.ttl == -1)
 			get_ttl(av, ac, i);
-		if (flags & FLAG_W && g_data.deadline == -1)
+		if (flags & FLAG_w && g_data.deadline == -1)
 			get_deadline(av, ac, i);
+		if (flags & FLAG_W && g_data.timeout == -1)
+			get_timeout(av, ac, i);
 		if (av[i][0] == '-')
 			parse_flag(&flags, av[i]);
 		i++;
@@ -40,6 +43,21 @@ void	get_deadline(char **av, int ac, const int i)
 	}
 	if (i == ac - 1)
 		print_usage();
+}
+
+void	get_timeout(char **av, int ac, const int i)
+{
+	g_data.timeout = atof(av[i]);
+	if (g_data.timeout < 0 || !ft_isdigit(av[i][0]))
+	{
+		printf("ft_ping: bad wait time\n");
+		exit(2);
+	}
+	if (i == ac - 1)
+	{
+		printf("HERER %s, %d\n", av[i], ac);
+		print_usage();
+	}
 }
 
 void	get_ttl(char **av, int ac, const int i)
@@ -95,6 +113,8 @@ int		parse_flag(int *flags, char *str)
 	else if (ft_strncmp(str, "-t", 2) == 0)
 		*flags = *flags | FLAG_T;
 	else if (ft_strncmp(str, "-w", 2) == 0)
+		*flags = *flags | FLAG_w;
+	else if (ft_strncmp(str, "-W", 2) == 0)
 		*flags = *flags | FLAG_W;
 	else if (ft_strncmp(str, "-q", 2) == 0)
 		*flags = *flags | FLAG_Q;

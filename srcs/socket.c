@@ -11,8 +11,8 @@ void	create_socket(const char *dest)
 		exit(1);
 	}
 
-	timeout.tv_sec = 1;
-	timeout.tv_usec = 0;
+	timeout.tv_sec = (int)g_data.timeout;
+	timeout.tv_usec = g_data.timeout - (int)g_data.timeout;
 	if (setsockopt(g_data.sockfd, SOL_IP, IP_TTL, &g_data.ttl, sizeof(g_data.ttl)) != 0)
 	{
 		fprintf(stderr, "Setting socket options to TTL failed! %m\n");
