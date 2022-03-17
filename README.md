@@ -8,12 +8,12 @@ un pied dans le monde merveilleux du reseau.
 
 ## Options :
 
-* -c
-* -D
-* -h
-* -i
-* -t
-* -q
-* -v
-* -w
-* -W
+* `-c`
+* `-D`
+* `-h`
+* `-i`
+* `-t`
+* `-q`
+* `-v`
+* `-w`
+* `-W`
