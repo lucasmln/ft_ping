@@ -6,7 +6,7 @@ mis pour recevoir une réponse, appelé round-trip time (temps aller-retour).
 Le but du sujet est de vous faire recoder la commande ping et de vous faire mettre
 un pied dans le monde merveilleux du reseau.
 
-##Usage :
+## Usage :
 
 Make && sudo ./ft_ping [-Dqvh] [-c count] [-i interval] [-t ttl] [-w deadline] destination
 
