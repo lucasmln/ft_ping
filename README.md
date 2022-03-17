@@ -7,9 +7,9 @@ Le but du sujet est de vous faire recoder la commande ping et de vous faire mett
 un pied dans le monde merveilleux du reseau.
 
 ## Usage :
-
+```
 Make && sudo ./ft_ping [-Dqvh] [-c count] [-i interval] [-t ttl] [-w deadline] destination
-
+```
 ## Options :
 
 * `[-c count]` Packet count
