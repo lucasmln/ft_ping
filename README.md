@@ -8,12 +8,12 @@ un pied dans le monde merveilleux du reseau.
 
 ## Options :
 
-* `-c`
-* `-D`
-* `-h`
-* `-i`
-* `-t`
-* `-q`
-* `-v`
-* `-w`
-* `-W`
+* `[-c count]` Packet count
+* `[-D]` Print Timestamp before packet
+* `[-h]` Display help
+* `[-i interval]` Set interval between ping
+* `[-t ttl]` Set TTL value
+* `[-q]` Quiet mode
+* `[-v]` Verbose
+* `[-w deadline]` Set deadline
+* `[-W timeout]` Set timeout for receve packet
