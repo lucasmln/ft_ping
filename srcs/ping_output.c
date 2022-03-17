@@ -2,7 +2,8 @@
 
 void	print_usage()
 {
-	printf("usage: ./ft_ping [-Dqvh] [-c count] [-i interval] [-t ttl] [-w deadline] destination\n");
+	printf("usage: ./ft_ping [-Dqvh] [-c count] [-i interval] [-t ttl]");
+	printf(" [-w deadline] [-W timeout] destination\n");
 	exit(2);
 }
 
