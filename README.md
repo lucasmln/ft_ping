@@ -12,7 +12,7 @@ Make && sudo ./ft_ping [-Dqvh] [-c count] [-i interval] [-t ttl] [-w deadline] d
 ```
 ## Options :
 
-* `[-c <ins>count</ins>]` Packet count
+* `[-c <u>count</u>]` Packet count
 * `[-D]` Print Timestamp before packet
 * `[-h]` Display help
 * `[-i interval]` Set interval between ping
