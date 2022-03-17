@@ -39,9 +39,9 @@ int		send_packet(struct timeval *packet_ping_start)
 	if (ret <= 0)
 	{
 		if (ret < 0)
-			fprintf(stderr, "Packet Sending Failed! %m\n");
+			printf("Packet Sending Failed!\n");
 		else if (!(g_data.flags & FLAG_Q))
-			printf("empty packet send\n");
+			printf("Empty packet send\n");
 		return (1);
 	}
 	return (0);
@@ -57,7 +57,6 @@ void	update_ping_stat(double time)
 		g_data.stats.avg = time;
 		g_data.stats.min = time;
 		g_data.received_msg++;
-		printf("AVG = %lf\n", g_data.stats.avg);
 	}
 	else
 	{
@@ -85,6 +84,12 @@ int		get_packet(struct timeval *packet_ping_start)
 		if (ip->ip_p != IPPROTO_ICMP)
 			return (1);
 		ret_icmp = (struct icmp *)((ip->ip_hl << 2) + g_data.reply.recv_buf);
+		if (ret_icmp->icmp_type == ICMP_TIMXCEED)
+		{
+			print_exceeded_packet(ip, ret_icmp);
+			g_data.error_msg++;
+			g_data.lose_msg++;
+		}
 		if (BSWAP16(ret_icmp->icmp_id) != g_data.curr_pid || ret_icmp->icmp_type != ICMP_ECHOREPLY)
 		{
 			free(g_data.reply.mhdr.msg_name);
@@ -96,7 +101,11 @@ int		get_packet(struct timeval *packet_ping_start)
 			print_packet(get_ping_time(*packet_ping_start, end_ping), ip->ip_ttl);
 	}
 	else
+	{
+		if (errno == EAGAIN && g_data.flags & FLAG_V)
+			printf("Request timeout for icmp_seq %d\n", g_data.seq);
 		g_data.lose_msg++;
+	}
 	free(g_data.reply.mhdr.msg_name);
 	return (0);
 }

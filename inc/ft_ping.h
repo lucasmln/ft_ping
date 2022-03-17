@@ -75,6 +75,7 @@ typedef struct		ping_s
 	int					sockfd;
 	int					count_msg;
 	int					lose_msg;
+	int					error_msg;
 	int					received_msg;
 	struct timeval		start_ping;
 	pid_t				curr_pid;
@@ -118,6 +119,7 @@ void	sighandler(int code);
 void	print_end_ping();
 void	print_packet(double time, int ttl);
 void	print_start_ping();
+void	print_exceeded_packet(struct ip *ip, struct icmp *icmp);
 
 /*
  ** time.c

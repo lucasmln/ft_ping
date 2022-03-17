@@ -26,8 +26,10 @@ void	print_end_ping()
 	g_data.stats.avg = g_data.stats.avg < 0 ? 0 : g_data.stats.avg;
 	mdev = get_mdev();
 	printf("\n--- %s ft_ping statistics ---\n", g_data.user_request);
-	printf("%d packets transmitted, %d received, %d%% packet loss, time %.0lfms\n",
-		g_data.count_msg, g_data.received_msg, lose, total);
+	printf("%d packets transmitted, %d received, ", g_data.count_msg, g_data.received_msg);
+	if (g_data.error_msg > 0)
+		printf("+%d errors, ", g_data.error_msg);
+	printf("%d%% packet loss, time %.0lfms\n", lose, total);
 	if (g_data.received_msg > 0)
 		printf("rtt min/avg/max/mdev = %.3lf/%.3lf/%.3lf/%.3lf ms\n", g_data.stats.min,
 			g_data.stats.avg, g_data.stats.max, mdev);
@@ -52,4 +54,20 @@ void	print_packet(double time, int ttl)
 	else
 		printf("time=%.3lf ms\n", time);
 	update_ping_stat(time);
+}
+
+void	print_exceeded_packet(struct ip *ip, struct icmp *icmp)
+{
+	struct timeval		now;
+
+	if (g_data.flags & FLAG_D)
+	{
+		save_time(&now);
+		printf("[%.0lf.%.0lf] ", (double)now.tv_sec, (double)now.tv_usec);
+	}
+	printf("From %s (%s) icmp_seq=%d ", inet_ntoa(ip->ip_src), inet_ntoa(ip->ip_src), g_data.seq);
+	if (icmp->icmp_code == 0)
+		printf("Time to live exceeded\n");
+	else
+		printf("Fragment reassembly timeout\n");
 }

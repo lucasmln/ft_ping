@@ -15,7 +15,9 @@
 void	send_ping()
 {
 	struct timeval		packet_time_start;
+	struct timeval		tmp;
 	int					ret;
+	double				time_to_wait;
 
 	if (g_data.flags & FLAG_w)
 		alarm(g_data.deadline);
@@ -29,20 +31,23 @@ void	send_ping()
 		g_data.seq++;
 		if (g_data.flags & FLAG_C && g_data.count == g_data.seq - 1)
 			break;
-		wait_time(g_data.interval);
+		save_time(&tmp);
+		time_to_wait = g_data.interval - ((double)tmp.tv_sec - (double)packet_time_start.tv_sec +
+				(((double)tmp.tv_usec - (double)packet_time_start.tv_usec) / USEC));
+		if (time_to_wait > 0)
+			wait_time(time_to_wait);
 	}
 	print_end_ping();
 }
 
 void	init(char **av, int ac)
 {
-	if (!(g_data.flags & FLAG_T))
+	if (g_data.ttl == -1 && !(g_data.flags & FLAG_T))
 		g_data.ttl = 128;
 	if (!(g_data.flags & FLAG_I))
 		g_data.interval = 1;
 	if (!(g_data.flags & FLAG_W))
 		g_data.timeout = 1;
-	g_data.count_msg = 0;
 	g_data.seq = 1;
 	g_data.user_request = av[ac -1];
 	g_data.curr_pid = getpid();
@@ -51,6 +56,9 @@ void	init(char **av, int ac)
 	g_data.stats.avg = -1;
 	g_data.stats.sum = 0;
 	g_data.received_msg = 0;
+	g_data.error_msg = 0;
+	g_data.lose_msg = 0;
+	g_data.count_msg = 0;
 	g_data.stats.sum_square = 0;
 	signal(SIGINT, sighandler);
 	signal(SIGALRM, sighandler);
