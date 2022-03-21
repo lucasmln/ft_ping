@@ -56,5 +56,5 @@ void	reverse_dns_lookup()
 		buf, sizeof(buf), NULL, 0, NI_NAMEREQD) == 0)
 		g_data.reverse_hostname = ft_strdup(buf);
 	else
-		g_data.reverse_hostname = ft_strdup("");
+		g_data.reverse_hostname = ft_strdup(g_data.address_name);
 }

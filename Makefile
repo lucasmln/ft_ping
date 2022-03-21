@@ -34,8 +34,8 @@ clean :
 	rm -f *.o
 
 fclean :
-	make -C libft fclean
-	rm -f *.o
+	make clean
+	rm libft/libft.a
 	rm ft_ping
 
 re :
